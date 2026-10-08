@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class ChatRequest(BaseModel):
-    conversation_ID: int
+    conversation_id: int
     text: str
 
 

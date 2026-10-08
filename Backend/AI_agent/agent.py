@@ -21,7 +21,7 @@ def llm_request(messages):
         raise
 
 # Agent
-async def run_agent(conversation_ID,message):
+async def run_agent(conversation_id,message):
      
     system_messages = [
         {
@@ -47,31 +47,31 @@ async def run_agent(conversation_ID,message):
         }
     ]
     
-    if conversation_ID not in conversation_history:
-        conversation_history[conversation_ID] = []
+    if conversation_id not in conversation_history:
+        conversation_history[conversation_id] = []
 
-    conversation_history[conversation_ID].append(
+    conversation_history[conversation_id].append(
         {
             "role": "user",
             "content": message
         }
     )
     
-    messages = system_messages + conversation_history[conversation_ID]
+    messages = system_messages + conversation_history[conversation_id]
      
     try:
         response = llm_request(messages)
         
         answer = response.choices[0].message
         
-        conversation_history[conversation_ID].append(
+        conversation_history[conversation_id].append(
             {
                 "role":"assistant",
                 "content": answer.content
             }
         )
 
-        print("history: ", conversation_history[conversation_ID])
+        print("history: ", conversation_history[conversation_id])
         return answer.content
     except Exception as e:
         return f"ERROR: {e}"
