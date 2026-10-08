@@ -21,7 +21,7 @@ class Message(Base):
     role = Column(String)
     content = Column(String)
     created_at = Column(String)
-    conversation = relationship("Conversation", back_populates="message")
+    conversation = relationship("Conversation", back_populates="messages")
     
     
     
