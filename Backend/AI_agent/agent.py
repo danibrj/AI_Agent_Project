@@ -74,7 +74,7 @@ async def run_agent(conversation_id,message,db):
     
     if conversation is None:
         conversation = Conversation(
-            test_key=f"history_{conversation_id}",
+            id=conversation_id,
             created_at="12:13"
         )
         db.add(conversation)
@@ -90,11 +90,11 @@ async def run_agent(conversation_id,message,db):
     db.commit()
     db.refresh(user_message)
 
-    print("Saved user message:", user_message.id)
-    print("Saved content:", user_message.content)
+    # print("Saved user message:", user_message.id)
+    # print("Saved content:", user_message.content)
     
     conversation_history = get_history(conversation, db)
-    print("history: ", get_history(conversation, db))
+    # print("history: ", get_history(conversation, db))
 
     
     messages = system_messages + conversation_history

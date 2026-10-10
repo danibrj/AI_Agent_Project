@@ -7,7 +7,7 @@ class Conversation(Base):
     
     id = Column(Integer,primary_key=True)
     created_at = Column(String)
-    test_key = Column(String, unique=True, nullable=True)
+    # test_key = Column(String, unique=True, nullable=True)
     messages = relationship("Message", back_populates="conversation")
     
 
