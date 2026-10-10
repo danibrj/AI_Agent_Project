@@ -24,5 +24,10 @@ Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
-    return db
+    try:
+        yield db
+    finally:
+        db.close()
+        
+    
         

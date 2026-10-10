@@ -1,97 +1,147 @@
-from database import get_db
-from models import Message, Conversation
-from sqlalchemy import select
-import sys
 
-sys.stdout.reconfigure(encoding="utf-8")
+# from database import get_db
+# from models import Message, Conversation
+# from sqlalchemy import select
+# import sys
 
-db = get_db()
-
-#----------------general test----------------
-# conversations = db.query(Conversation).all()
-
-# print("=== Conversations ===")
-
-# for conversation in conversations:
-#     print(conversation.__dict__)
-
-
-# messages = db.query(Message).all()
-
-# print("\n=== Messages ===")
-
-# for message in messages:
-#     print(message.__dict__)
-#--------------------------------------------
-
-def test(statement):
-
-    result = db.execute(statement)
-
-    messages = result.scalars().all()
-
-    for message in messages:
-        print(message.role + " : " + message.content)
-
-# create conversation
-conversation_1 = Conversation(created_at="12:13")
-conversation_2 = Conversation(created_at="7:52")
+# sys.stdout.reconfigure(encoding="utf-8")
 
 
 
-db.add(conversation_1)
-db.add(conversation_2)
-db.commit()
+# db_generator = get_db()
+# db = next(db_generator)
 
-# save the messages
-message0 = Message(
-    conversation_id=conversation_1.id,
-    role="user",
-    content="اسم من دانیال هست",
-    created_at="12:34"
-)
-message1 = Message(
-    conversation_id=conversation_1.id,
-    role="assistant",
-    content="خوشبختم دانیال",
-    created_at="12:35"
-)
-message2 = Message(
-    conversation_id=conversation_2.id,
-    role="user",
-    content="تو کی هستی",
-    created_at="8:02"
-)
-message3 = Message(
-    conversation_id=conversation_1.id,
-    role="user",
-    content="اسم من چی بود؟",
-    created_at="12:36"
-)
-message4 = Message(
-    conversation_id=conversation_2.id,
-    role="assistant",
-    content="من مدل هوش مصنوعی هستم",
-    created_at="9:06"
-)
+# try:
+#     db.query(Message).delete(synchronize_session=False)
+#     db.query(Conversation).delete(synchronize_session=False)
+
+#     db.commit()
+
+#     print("Database cleared successfully!")
+
+# finally:
+#     try:
+#         next(db_generator)
+#     except StopIteration:
+#         pass
 
 
-db.add(message0)
-db.add(message1)
-db.add(message2)
-db.add(message3)
-db.add(message4)
-db.commit()
+# # # def test(statement):
+# # #     result = db.execute(statement)
+# # #     messages = result.scalars().all()
 
-# read history
-#test1:
-statement0 = select(Message).where(Message.conversation_id == conversation_1.id)
+# # #     message_list = []
+# # #     for massage in messages:
+# # #         l.append({
+# # #             "role" : massage.role,
+# # #             "content" : massage.content
+# # #         })
+# # #     return message_list
 
-test(statement0)
 
-print("-----")
-#test2:
-statement1 = select(Message).where(Message.conversation_id == conversation_2.id)
+# # # try:
 
-test(statement1)
+# # #     conversation_1 = (
+# # #         db.query(Conversation)
+# # #         .filter_by(test_key="history_test_1")
+# # #         .first()
+# # #     )
 
+# # #     if conversation_1 is None:
+# # #         conversation_1 = Conversation(
+# # #             test_key="history_test_1",
+# # #             created_at="12:13"
+# # #         )
+# # #         db.add(conversation_1)
+
+# # #     conversation_2 = (
+# # #         db.query(Conversation)
+# # #         .filter_by(test_key="history_test_2")
+# # #         .first()
+# # #     )
+
+# # #     if conversation_2 is None:
+# # #         conversation_2 = Conversation(
+# # #             test_key="history_test_2",
+# # #             created_at="7:52"
+# # #         )
+# # #         db.add(conversation_2)
+
+# # #     db.commit()
+
+
+# # #     db.query(Message).filter(
+# # #         Message.conversation_id.in_(
+# # #             [conversation_1.id, conversation_2.id]
+# # #         )
+# # #     ).delete(synchronize_session=False)
+
+# # #     db.commit()
+
+
+# # #     messages = [
+# # #         Message(
+# # #             conversation_id=conversation_1.id,
+# # #             role="user",
+# # #             content="اسم من دانیال هست",
+# # #             created_at="12:34"
+# # #         ),
+# # #         Message(
+# # #             conversation_id=conversation_1.id,
+# # #             role="assistant",
+# # #             content="خوشبختم دانیال",
+# # #             created_at="12:35"
+# # #         ),
+# # #         Message(
+# # #             conversation_id=conversation_2.id,
+# # #             role="user",
+# # #             content="تو کی هستی",
+# # #             created_at="8:02"
+# # #         ),
+# # #         Message(
+# # #             conversation_id=conversation_1.id,
+# # #             role="user",
+# # #             content="اسم من چی بود؟",
+# # #             created_at="12:36"
+# # #         ),
+# # #         Message(
+# # #             conversation_id=conversation_2.id,
+# # #             role="assistant",
+# # #             content="من مدل هوش مصنوعی هستم",
+# # #             created_at="9:06"
+# # #         )
+# # #     ]
+
+# # #     db.add_all(messages)
+# # #     db.commit()
+
+
+# # #     statement0 = (
+# # #         select(Message)
+# # #         .where(
+# # #             Message.conversation_id == conversation_1.id
+# # #         )
+# # #         .order_by(Message.id)
+# # #     )
+
+# # #     print(test(statement0))
+
+# # #     print("-----")
+
+
+# # #     statement1 = (
+# # #         select(Message)
+# # #         .where(
+# # #             Message.conversation_id == conversation_2.id
+# # #         )
+# # #         .order_by(Message.id)
+# # #     )
+
+# # #     print(test(statement1))
+
+# # # finally:
+
+# # #     try:
+# # #         next(db_generator)
+# # #     except StopIteration:
+# # #         pass

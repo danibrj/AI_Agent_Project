@@ -1,11 +1,33 @@
-from AI_agent.client import get_client
+from Backend.AI_agent.client import get_client
 import sys
+from Database.models import Conversation, Message
+from sqlalchemy import select
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 client = get_client()
 
-conversation_history = {}
+#DB
+def get_history(conversation, db):
+    statement = (
+        select(Message)
+        .where(
+            Message.conversation_id == conversation.id
+        )
+        .order_by(Message.id)
+    )
+    
+    result = db.execute(statement)
+    messages = result.scalars().all()
+
+    message_list = []
+    for massage in messages:
+        message_list.append({
+            "role" : massage.role,
+            "content" : massage.content
+        })
+    return message_list
+        
 
 # LLM
 def llm_request(messages):
@@ -21,7 +43,7 @@ def llm_request(messages):
         raise
 
 # Agent
-async def run_agent(conversation_id,message):
+async def run_agent(conversation_id,message,db):
      
     system_messages = [
         {
@@ -47,31 +69,48 @@ async def run_agent(conversation_id,message):
         }
     ]
     
-    if conversation_id not in conversation_history:
-        conversation_history[conversation_id] = []
-
-    conversation_history[conversation_id].append(
-        {
-            "role": "user",
-            "content": message
-        }
+    conversation = (
+        db.query(Conversation)
+        .filter_by(id=conversation_id)
+        .first()
     )
     
-    messages = system_messages + conversation_history[conversation_id]
+    if conversation is None:
+        conversation = Conversation(
+            test_key=f"history_{conversation_id}",
+            created_at="12:13"
+        )
+        db.add(conversation)
+    
+    user_message = Message(
+        conversation_id=conversation.id,
+        role="user",
+        content=message,
+        created_at="9:06"
+    )
+    db.add(user_message)
+    db.commit()
+    conversation_history = get_history(conversation, db)
+    
+
+    
+    messages = system_messages + conversation_history
      
     try:
         response = llm_request(messages)
         
         answer = response.choices[0].message
         
-        conversation_history[conversation_id].append(
-            {
-                "role":"assistant",
-                "content": answer.content
-            }
+        assistant_message = Message(
+            conversation_id=conversation.id,
+            role="assistant",
+            content=answer.content,
+            created_at="9:10"
         )
+        db.add(assistant_message)
+        db.commit()
 
-        print("history: ", conversation_history[conversation_id])
+        print("history: ", get_history(conversation, db))
         return answer.content
     except Exception as e:
         return f"ERROR: {e}"
