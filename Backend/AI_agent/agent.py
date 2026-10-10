@@ -20,13 +20,10 @@ def get_history(conversation, db):
     result = db.execute(statement)
     messages = result.scalars().all()
 
-    message_list = []
-    for massage in messages:
-        message_list.append({
-            "role" : massage.role,
-            "content" : massage.content
-        })
-    return message_list
+    return [
+        {"role": msg.role, "content": msg.content}
+        for msg in messages
+    ]
         
 
 # LLM
@@ -81,6 +78,7 @@ async def run_agent(conversation_id,message,db):
             created_at="12:13"
         )
         db.add(conversation)
+        db.flush() 
     
     user_message = Message(
         conversation_id=conversation.id,
@@ -90,8 +88,13 @@ async def run_agent(conversation_id,message,db):
     )
     db.add(user_message)
     db.commit()
-    conversation_history = get_history(conversation, db)
+    db.refresh(user_message)
+
+    print("Saved user message:", user_message.id)
+    print("Saved content:", user_message.content)
     
+    conversation_history = get_history(conversation, db)
+    print("history: ", get_history(conversation, db))
 
     
     messages = system_messages + conversation_history
