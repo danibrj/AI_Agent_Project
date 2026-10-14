@@ -5,6 +5,8 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from Database.database import get_db
 
+
+
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
 @router.post("", response_model=ChatResponse)

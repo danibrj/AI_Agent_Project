@@ -1,29 +1,29 @@
 
-# from database import get_db
-# from models import Message, Conversation
-# from sqlalchemy import select
-# import sys
+from database import get_db
+from models import Message, Conversation
+from sqlalchemy import select
+import sys
 
-# sys.stdout.reconfigure(encoding="utf-8")
+sys.stdout.reconfigure(encoding="utf-8")
 
 
 
-# db_generator = get_db()
-# db = next(db_generator)
+db_generator = get_db()
+db = next(db_generator)
 
-# try:
-#     db.query(Message).delete(synchronize_session=False)
-#     db.query(Conversation).delete(synchronize_session=False)
+try:
+    db.query(Message).delete(synchronize_session=False)
+    db.query(Conversation).delete(synchronize_session=False)
 
-#     db.commit()
+    db.commit()
 
-#     print("Database cleared successfully!")
+    print("Database cleared successfully!")
 
-# finally:
-#     try:
-#         next(db_generator)
-#     except StopIteration:
-#         pass
+finally:
+    try:
+        next(db_generator)
+    except StopIteration:
+        pass
 
 
 # # # def test(statement):

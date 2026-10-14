@@ -2,6 +2,13 @@ from Backend.AI_agent.client import get_client
 import sys
 from Database.models import Conversation, Message
 from sqlalchemy import select
+from datetime import datetime
+from openai import (
+    APIConnectionError,
+    APIStatusError,
+    APITimeoutError,
+    RateLimitError,
+)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -36,7 +43,20 @@ def llm_request(messages):
         )
         
         return response
-    except Exception:
+    except APITimeoutError as e:
+        print(f"LLM timeout: {e}")
+        raise
+
+    except APIConnectionError as e:
+        print(f"LLM connection error: {e}")
+        raise
+
+    except RateLimitError as e:
+        print(f"LLM rate limit: {e}")
+        raise
+
+    except APIStatusError as e:
+        print(f"LLM API error: status={e.status_code}")
         raise
 
 # Agent
@@ -84,7 +104,7 @@ async def run_agent(conversation_id,message,db):
         conversation_id=conversation.id,
         role="user",
         content=message,
-        created_at="9:06"
+        created_at=str(datetime.now())
     )
     db.add(user_message)
     db.commit()
@@ -108,7 +128,7 @@ async def run_agent(conversation_id,message,db):
             conversation_id=conversation.id,
             role="assistant",
             content=answer.content,
-            created_at="9:10"
+            created_at=str(datetime.now())
         )
         db.add(assistant_message)
         db.commit()
